@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('journals', function (Blueprint $table) {
             $table->id();
+            $table->string('invoice_number')->unique();
             $table->date('date');
             $table->string('description')->nullable();
             $table->timestamps();

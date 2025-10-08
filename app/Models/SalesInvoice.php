@@ -11,13 +11,21 @@ class SalesInvoice extends Model
         'customer_id',
         'date',
         'due_date',
+        'account_id',
+        'qty',
+        'price',
         'total',
+        'ket',
         'status', // draft, paid, overdue
     ];
 
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'account_id');
+    }
     public function customer()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
     public function journalEntries()
@@ -28,16 +36,9 @@ class SalesInvoice extends Model
     protected static function booted()
     {
         static::creating(function ($model) {
-            // ambil tanggal saat ini
-            $date = now()->format('dmy'); // contoh 081025
-
-            // hitung jumlah invoice hari ini
+            $date = now()->format('dmy');
             $count = self::whereDate('created_at', now()->toDateString())->count() + 1;
-
-            // format nomor urut jadi 3 digit
             $seq = str_pad($count, 3, '0', STR_PAD_LEFT);
-
-            // gabungkan jadi nomor invoice
             $model->invoice_number = "{$seq}/Sales/{$date}";
         });
     }

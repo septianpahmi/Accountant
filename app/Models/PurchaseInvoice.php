@@ -11,13 +11,21 @@ class PurchaseInvoice extends Model
         'supplier_id',
         'date',
         'due_date',
+        'account_id',
+        'qty',
+        'price',
         'total',
+        'ket',
         'status', // draft, paid, overdue
     ];
 
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'account_id');
+    }
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
     public function journalEntries()

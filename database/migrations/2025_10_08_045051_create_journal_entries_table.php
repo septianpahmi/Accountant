@@ -16,7 +16,10 @@ return new class extends Migration
             $table->foreignId('journal_id')->constrained()->cascadeOnDelete();
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();
             $table->enum('type', ['debit', 'credit']);
-            $table->decimal('amount', 15, 2);
+            $table->string('qty');
+            $table->decimal('price', 15, 2);
+            $table->decimal('debit', 15, 2)->default(0)->nullable();
+            $table->decimal('credit', 15, 2)->default(0)->nullable();
             $table->nullableMorphs('journalable');
             $table->timestamps();
         });

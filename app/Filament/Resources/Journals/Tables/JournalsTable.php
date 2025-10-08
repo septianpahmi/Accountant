@@ -19,7 +19,7 @@ class JournalsTable
                 TextColumn::make('description')->label('Keterangan')->searchable(),
                 TextColumn::make('entries_sum_amount')
                     ->label('Total')
-                    ->getStateUsing(fn($record) => $record->entries->sum('amount'))
+                    ->getStateUsing(fn($record) => $record->entries->sum('price'))
                     ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.')),
             ])
             ->filters([

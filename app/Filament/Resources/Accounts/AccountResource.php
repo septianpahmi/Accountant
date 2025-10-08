@@ -59,8 +59,7 @@ class AccountResource extends Resource
                     ->label('Saldo Awal')
                     ->prefix('Rp')
                     ->numeric()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters([','])
+                    ->currencyMask(thousandSeparator: '.', decimalSeparator: ',', precision: 0)
 
             ]);
     }
@@ -94,7 +93,7 @@ class AccountResource extends Resource
                     ->searchable(),
                 TextColumn::make('opening_balance')
                     ->label('Saldo')
-                    ->money('IDR', locale: 'id'),
+                    ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.')),
             ])
             ->filters([
                 //

@@ -10,20 +10,23 @@ class JournalEntry extends Model
         'journal_id',
         'account_id',
         'type',   // debit atau credit
-        'amount',
+        'qty',
+        'price',
+        'debit',
+        'credit',
+        'journalable_id',
+        'journalable_type',
     ];
 
     public function journal()
     {
-        return $this->belongsTo(Journal::class);
+        return $this->belongsTo(Journal::class, 'journal_id');
     }
 
     public function account()
     {
         return $this->belongsTo(Account::class);
     }
-
-    // Relasi polymorphic agar bisa nyambung ke faktur penjualan/pembelian
     public function journalable()
     {
         return $this->morphTo();

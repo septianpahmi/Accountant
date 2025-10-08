@@ -17,6 +17,9 @@ class SalesInvoicesTable
             ->columns([
                 TextColumn::make('invoice_number')
                     ->searchable(),
+                TextColumn::make('account.name')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('customer.name')
                     ->searchable()
                     ->sortable(),

@@ -15,23 +15,27 @@ class SalesInvoiceObserver
     {
         $journal = Journal::create([
             'date' => $salesInvoice->date,
-            'description' => 'Penjualan #' . $salesInvoice->id,
+            'description' => $salesInvoice->ket,
         ]);
 
         JournalEntry::create([
             'journal_id' => $journal->id,
-            'account_id' => 1,
+            'account_id' => $salesInvoice->account_id,
             'type'       => 'debit',
-            'amount'     => $salesInvoice->total,
+            'qty'     => $salesInvoice->qty,
+            'price'     => $salesInvoice->price,
+            'debit'      =>  $salesInvoice->total,
             'journalable_id'   => $salesInvoice->id,
             'journalable_type' => SalesInvoice::class,
         ]);
 
         JournalEntry::create([
             'journal_id' => $journal->id,
-            'account_id' => 1,
+            'account_id' => $salesInvoice->account_id,
             'type'       => 'credit',
-            'amount'     => $salesInvoice->total,
+            'qty'     => $salesInvoice->qty,
+            'price'     => $salesInvoice->price,
+            'credit'     => $salesInvoice->total,
             'journalable_id'   => $salesInvoice->id,
             'journalable_type' => SalesInvoice::class,
         ]);

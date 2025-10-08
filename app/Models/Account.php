@@ -17,4 +17,13 @@ class Account extends Model
     {
         return $this->hasMany(JournalEntry::class);
     }
+
+    public function SalesInvoice()
+    {
+        return $this->hasMany(SalesInvoice::class);
+    }
+    public function PurchaseInvoice()
+    {
+        return $this->hasMany(PurchaseInvoice::class);
+    }
 }

@@ -14,10 +14,14 @@ return new class extends Migration
         Schema::create('purchase_invoices', function (Blueprint $table) {
             $table->id();
             $table->string('invoice_number')->unique();
+            $table->foreignId('account_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
             $table->date('date');
             $table->date('due_date')->nullable();
+            $table->string('qty');
+            $table->decimal('price', 15, 2);
             $table->decimal('total', 15, 2);
+            $table->string('ket');
             $table->enum('status', ['draft', 'paid', 'overdue'])->default('draft');
             $table->timestamps();
         });
