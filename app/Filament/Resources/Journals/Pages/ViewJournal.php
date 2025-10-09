@@ -3,19 +3,17 @@
 namespace App\Filament\Resources\Journals\Pages;
 
 use App\Filament\Resources\Journals\JournalResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditJournal extends EditRecord
+class ViewJournal extends ViewRecord
 {
     protected static string $resource = JournalResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            EditAction::make(),
         ];
     }
 }

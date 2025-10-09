@@ -24,21 +24,21 @@ class SalesInvoiceObserver
             'type'       => 'debit',
             'qty'     => $salesInvoice->qty,
             'price'     => $salesInvoice->price,
-            'debit'      =>  $salesInvoice->total,
+            'total'      =>  $salesInvoice->total,
             'journalable_id'   => $salesInvoice->id,
             'journalable_type' => SalesInvoice::class,
         ]);
 
-        JournalEntry::create([
-            'journal_id' => $journal->id,
-            'account_id' => $salesInvoice->account_id,
-            'type'       => 'credit',
-            'qty'     => $salesInvoice->qty,
-            'price'     => $salesInvoice->price,
-            'credit'     => $salesInvoice->total,
-            'journalable_id'   => $salesInvoice->id,
-            'journalable_type' => SalesInvoice::class,
-        ]);
+        // JournalEntry::create([
+        //     'journal_id' => $journal->id,
+        //     'account_id' => $salesInvoice->account_id,
+        //     'type'       => 'credit',
+        //     'qty'     => $salesInvoice->qty,
+        //     'price'     => $salesInvoice->price,
+        //     'total'     => $salesInvoice->total,
+        //     'journalable_id'   => $salesInvoice->id,
+        //     'journalable_type' => SalesInvoice::class,
+        // ]);
     }
 
     /**

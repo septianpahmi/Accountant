@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\Journals\Tables;
 
-use Filament\Tables\Table;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class JournalsTable
 {
@@ -15,8 +15,15 @@ class JournalsTable
     {
         return $table
             ->columns([
-                TextColumn::make('date')->date('d/m/Y')->sortable(),
-                TextColumn::make('description')->label('Keterangan')->searchable(),
+                TextColumn::make('invoice_number')
+                    ->label('Number')
+                    ->searchable(),
+                TextColumn::make('date')
+                    ->date('d/m/Y')
+                    ->sortable(),
+                TextColumn::make('description')
+                    ->label('Ket')
+                    ->searchable(),
                 TextColumn::make('entries_sum_amount')
                     ->label('Total')
                     ->getStateUsing(fn($record) => $record->entries->sum('price'))

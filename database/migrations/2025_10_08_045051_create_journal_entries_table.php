@@ -18,8 +18,7 @@ return new class extends Migration
             $table->enum('type', ['debit', 'credit']);
             $table->string('qty');
             $table->decimal('price', 15, 2);
-            $table->decimal('debit', 15, 2)->default(0)->nullable();
-            $table->decimal('credit', 15, 2)->default(0)->nullable();
+            $table->decimal('total', 15, 2);
             $table->nullableMorphs('journalable');
             $table->timestamps();
         });
