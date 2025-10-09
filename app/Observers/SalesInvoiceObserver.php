@@ -13,32 +13,29 @@ class SalesInvoiceObserver
      */
     public function created(SalesInvoice $salesInvoice): void
     {
-        $journal = Journal::create([
-            'date' => $salesInvoice->date,
-            'description' => $salesInvoice->ket,
-        ]);
+        if ($salesInvoice->status === 'paid') {
+            $journal = Journal::create([
+                'date' => $salesInvoice->date,
+                'description' => $salesInvoice->ket,
+            ]);
 
-        JournalEntry::create([
-            'journal_id' => $journal->id,
-            'account_id' => $salesInvoice->account_id,
-            'type'       => 'debit',
-            'qty'     => $salesInvoice->qty,
-            'price'     => $salesInvoice->price,
-            'total'      =>  $salesInvoice->total,
-            'journalable_id'   => $salesInvoice->id,
-            'journalable_type' => SalesInvoice::class,
-        ]);
+            JournalEntry::create([
+                'journal_id' => $journal->id,
+                'account_id' => $salesInvoice->account_id,
+                'type'       => 'debit',
+                'qty'     => $salesInvoice->qty,
+                'price'     => $salesInvoice->price,
+                'total'      =>  $salesInvoice->total,
+                'journalable_id'   => $salesInvoice->id,
+                'journalable_type' => SalesInvoice::class,
 
-        // JournalEntry::create([
-        //     'journal_id' => $journal->id,
-        //     'account_id' => $salesInvoice->account_id,
-        //     'type'       => 'credit',
-        //     'qty'     => $salesInvoice->qty,
-        //     'price'     => $salesInvoice->price,
-        //     'total'     => $salesInvoice->total,
-        //     'journalable_id'   => $salesInvoice->id,
-        //     'journalable_type' => SalesInvoice::class,
-        // ]);
+            ]);
+            $debitAccountId = $salesInvoice->account_id;
+            $debitAccount = \App\Models\Account::find($debitAccountId);
+            if ($debitAccount) {
+                $debitAccount->increment('opening_balance', $salesInvoice->total);
+            }
+        }
     }
 
     /**

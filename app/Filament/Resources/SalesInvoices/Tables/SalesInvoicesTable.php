@@ -2,12 +2,19 @@
 
 namespace App\Filament\Resources\SalesInvoices\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use App\Models\Account;
+use App\Models\Journal;
+use Filament\Tables\Table;
+use App\Models\SalesInvoice;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Illuminate\Support\Facades\DB;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 
 class SalesInvoicesTable
 {
@@ -51,7 +58,55 @@ class SalesInvoicesTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                Action::make('generateInvoice')
+                    ->label('Invoice')
+                    ->icon('heroicon-o-document-text')
+                    ->color('danger')
+                    ->url(fn($record) => url('sales-invoices/invoices/' . $record->id))
+                    ->openUrlInNewTab(),
+                // ->action(function ($record) {
+                //     return response()->view('filament.invoice.sales', [
+                //         'record' => $record,
+                //     ]);
+                // }),
                 EditAction::make(),
+                Action::make('markAsPaid')
+                    ->label('Lunas')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn($record) => $record->status !== 'paid')
+                    ->action(function ($record) {
+                        DB::transaction(function () use ($record) {
+                            $record->update(['status' => 'paid']);
+                            $journal = \App\Models\Journal::create([
+                                'date' => $record->date,
+                                'description' => $record->ket,
+                            ]);
+                            $debitAccountId = $record->account_id;
+
+                            $journal->entries()->create([
+                                'account_id' => $debitAccountId,
+                                'type' => 'debit',
+                                'price' => $record->price,
+                                'qty' => $record->qty,
+                                'total' => $record->total,
+                                'journalable_id'   => $record->id,
+                                'journalable_type' => SalesInvoice::class,
+                            ]);
+
+                            $debitAccount = \App\Models\Account::find($debitAccountId);
+                            if ($debitAccount) {
+                                $debitAccount->increment('opening_balance', $record->total);
+                            }
+                        });
+                    })
+                    ->after(function () {
+                        Notification::make()
+                            ->title('Faktur berhasil ditandai lunas dan saldo diperbarui')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

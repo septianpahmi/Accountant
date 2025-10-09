@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Journals;
 
 use BackedEnum;
+use UnitEnum;
 use App\Models\Journal;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
@@ -21,10 +22,11 @@ class JournalResource extends Resource
 {
     protected static ?string $model = Journal::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
 
     protected static ?string $recordTitleAttribute = 'Journal';
-
+    protected static string | UnitEnum | null $navigationGroup = 'Journal';
+    protected static ?int $navigationSort = 7;
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with('entries');
