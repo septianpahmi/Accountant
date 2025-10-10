@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Accounts;
 
 use UnitEnum;
 use BackedEnum;
+use Carbon\Carbon;
 use App\Models\Account;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
@@ -12,12 +13,14 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
 use Filament\Actions\DeleteAction;
+use Filament\Tables\Filters\Filter;
 use Filament\Support\Icons\Heroicon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\TextInput\Mask;
 use App\Filament\Resources\Accounts\Pages\ManageAccounts;
@@ -58,6 +61,7 @@ class AccountResource extends Resource
                 TextInput::make('opening_balance')
                     ->label('Saldo Awal')
                     ->prefix('Rp')
+                    ->default(0)
                     ->numeric()
                     ->currencyMask(thousandSeparator: '.', decimalSeparator: ',', precision: 0)
 
@@ -77,6 +81,7 @@ class AccountResource extends Resource
                 TextEntry::make('opening_balance')
                     ->label('Saldo')
                     ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+
             ]);
     }
 
@@ -94,10 +99,47 @@ class AccountResource extends Resource
                 TextColumn::make('opening_balance')
                     ->label('Saldo')
                     ->formatStateUsing(fn($state) => 'Rp ' . number_format($state, 0, ',', '.')),
+                TextColumn::make('saldo')
+                    ->label('Saldo Periode')
+                    ->getStateUsing(function ($record, $livewire) {
+                        $start = $livewire->tableFilters['periode']['data']['start_date'] ?? null;
+                        $end = $livewire->tableFilters['periode']['data']['end_date'] ?? null;
+                        return 'Rp ' . number_format($record->getBalanceByPeriod($start, $end), 0, ',', '.');
+                    }),
             ])
             ->filters([
-                //
+                Filter::make('periode')
+                    ->form([
+                        DatePicker::make('start_date')
+                            ->label('Dari Tanggal')
+                            ->default(Carbon::today()),
+                        DatePicker::make('end_date')
+                            ->label('Sampai Tanggal')
+                            ->default(Carbon::today()),
+                    ])
+                    ->query(function ($query, array $data) {
+                        $start = $data['start_date'] ?? null;
+                        $end = $data['end_date'] ?? null;
+                        return $query
+                            ->when($start, fn($q) => $q->whereDate('created_at', '>=', $start))
+                            ->when($end, fn($q) => $q->whereDate('created_at', '<=', $end));
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (isset($data['start_date'], $data['end_date'])) {
+                            return 'Periode: ' . Carbon::parse($data['start_date'])->format('d/m/Y')
+                                . ' — ' . Carbon::parse($data['end_date'])->format('d/m/Y');
+                        }
+
+                        return 'Periode: Hari ini';
+                    }),
             ])
+            ->header(
+                fn($livewire) =>
+                view('filament.account-period-header', [
+                    'start' => $livewire->tableFilters['periode']['data']['start_date'] ?? null,
+                    'end' => $livewire->tableFilters['periode']['data']['end_date'] ?? null,
+                ])
+            )
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

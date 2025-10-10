@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PurchaseInvoices\Tables;
 use Filament\Tables\Table;
 use App\Models\SalesInvoice;
 use Filament\Actions\Action;
+use App\Models\PurchaseInvoice;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Illuminate\Support\Facades\DB;
@@ -52,13 +53,19 @@ class PurchaseInvoicesTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                Action::make('generateInvoice')
+                    ->label('Invoice')
+                    ->icon('heroicon-o-document-text')
+                    ->color('danger')
+                    ->url(fn($record) => route('purchaseInvoice', ['id' => $record->id]))
+                    ->openUrlInNewTab(),
                 EditAction::make(),
                 Action::make('markAsPaid')
-                    ->label('Tandai Lunas')
+                    ->label('Lunas')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn($record) => $record->status !== 'paid') // hanya tampil jika belum paid
+                    ->visible(fn($record) => $record->status !== 'paid')
                     ->action(function ($record) {
                         DB::transaction(function () use ($record) {
                             $record->update(['status' => 'paid']);
@@ -75,7 +82,7 @@ class PurchaseInvoicesTable
                                 'qty' => $record->qty,
                                 'total' => $record->total,
                                 'journalable_id'   => $record->id,
-                                'journalable_type' => SalesInvoice::class,
+                                'journalable_type' => PurchaseInvoice::class,
                             ]);
 
                             $debitAccount = \App\Models\Account::find($debitAccountId);

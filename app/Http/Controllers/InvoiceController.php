@@ -13,4 +13,9 @@ class InvoiceController extends Controller
         $record = SalesInvoice::findOrFail($id);
         return view('invoice.sales', compact('record'));
     }
+    public function showPurchase($id)
+    {
+        $record = PurchaseInvoice::findOrFail($id);
+        return view('invoice.purchase', compact('record'));
+    }
 }

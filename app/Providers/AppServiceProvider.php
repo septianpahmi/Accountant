@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\PurchaseInvoice;
 use App\Models\SalesInvoice;
+use App\Observers\PurchaseInvoiceObserver;
 use App\Observers\SalesInvoiceObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         SalesInvoice::observe(SalesInvoiceObserver::class);
+        PurchaseInvoice::observe(PurchaseInvoiceObserver::class);
     }
 }

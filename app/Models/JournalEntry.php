@@ -30,4 +30,31 @@ class JournalEntry extends Model
     {
         return $this->morphTo();
     }
+
+    protected static function booted()
+    {
+        static::created(function ($entry) {
+            $account = $entry->account;
+
+            if ($account) {
+                if ($entry) {
+                    $account->opening_balance += $entry->total;
+                }
+
+                $account->save();
+            }
+        });
+
+        static::deleted(function ($entry) {
+            $account = $entry->account;
+
+            if ($account) {
+                if ($entry) {
+                    $account->opening_balance -= $entry->total;
+                }
+
+                $account->save();
+            }
+        });
+    }
 }

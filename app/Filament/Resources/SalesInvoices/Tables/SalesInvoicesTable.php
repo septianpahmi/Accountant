@@ -64,11 +64,6 @@ class SalesInvoicesTable
                     ->color('danger')
                     ->url(fn($record) => url('sales-invoices/invoices/' . $record->id))
                     ->openUrlInNewTab(),
-                // ->action(function ($record) {
-                //     return response()->view('filament.invoice.sales', [
-                //         'record' => $record,
-                //     ]);
-                // }),
                 EditAction::make(),
                 Action::make('markAsPaid')
                     ->label('Lunas')
